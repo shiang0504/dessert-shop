@@ -1,0 +1,11 @@
+[
+    {"id":20001,"title":"滿1000現折100元","min":1000,"discount_minus":100,"discount_percent":"","discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20002,"title":"滿500現打8折","min":500,"discount_minus":"","discount_percent":0.8,"discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2023,"month":4,"date":26,"hours":15},"disabled":true,"remark":""},
+    {"id":20003,"title":"滿1000現打9折","min":1000,"discount_minus":"","discount_percent":0.9,"discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20004,"title":"滿200現打5折(上限200元)","min":200,"discount_minus":"","discount_percent":0.5,"discount_max":200,"dateStart":{"year":2023,"month":4,"date":27,"hours":16},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20005,"title":"滿200現打1折(上限200元)","min":200,"discount_minus":"","discount_percent":0.1,"discount_max":200,"dateStart":{"year":2024,"month":4,"date":28,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20006,"title":"滿1500現折100元","min":1500,"discount_minus":100,"discount_percent":"","discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20007,"title":"滿2000現折300元","min":2000,"discount_minus":300,"discount_percent":"","discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20008,"title":"滿300現折80元","min":300,"discount_minus":80,"discount_percent":"","discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""},
+    {"id":20009,"title":"滿50現折50元","min":50,"discount_minus":50,"discount_percent":"","discount_max":0,"dateStart":{"year":2023,"month":4,"date":26,"hours":12},"dateEnd":{"year":2029,"month":4,"date":26,"hours":12},"disabled":true,"remark":""}
+]
