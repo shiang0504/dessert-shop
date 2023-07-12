@@ -47,6 +47,11 @@ const type = ref([]) //選中的類型
 const ingredient = ref([]) //選中的關鍵字
 const search = ref('') //輸入框內容
 
+// 如果radio已經被選定時又被點擊第二次就取消選定
+const radioClick =(event)=>{
+  if(event.target.value === type.value) type.value=[];
+}
+
 // 全部清除
 const clearAll=()=>{
   search.value=''
@@ -290,9 +295,8 @@ const move = computed(()=>{
 const stylebg=(url)=>{
   return `background: url(${url}) no-repeat center center / cover`
 }
-// 商品詳情頁面
+//商品詳情頁面
 const productIndexOfproducts = ref(0) //動態修改
-
 const productDetailNowIndex = ref(0)
 //箭頭切換index
 const productDetailIndexChange=(n)=>{
@@ -327,6 +331,11 @@ const urlSwitch=computed(()=>{
 })
 window.addEventListener('hashchange',hashchangeHandler)
 hashchangeHandler()
+
+const copyUrl=()=>{
+  const url= window.location.href
+  navigator.clipboard.writeText(url)
+}
 
 //判斷手機使用者手勢
 let startX =''
@@ -363,7 +372,7 @@ const touchendHandler=(n,event)=>{
   }
 }
 // coupon折扣券
-const coupons=ref(couponsJson)
+const coupons = ref(couponsJson)
 
 // 檢查折扣券日期是否在期限內+是否滿低消
 watchEffect(()=>{
@@ -388,10 +397,7 @@ watchEffect(()=>{
 })
 //過濾過期的折價券
 const filterCoupons = computed(()=>{
-  // let arr = coupons.value //reactive 會動到原資料
-  let arr = [...coupons.value] //reactive OK 不動到原資料
-  // let arr = ref([...coupons.value]) //reactive 都要寫value 不動到原資料
-  // arr.pop()
+  let arr = [...coupons.value] // 不動到原資料
   const nowTime = new Date()
   arr = arr.filter(i=>{
     const endTime = new Date(i.dateEnd.year, i.dateEnd.month-1, i.dateEnd.date, i.dateEnd.hours)
@@ -516,7 +522,7 @@ const checkout=()=>{
             </div>
             <div class="typeFilter" :class="{hide:typeFilterHide}">
               <div v-for="item in typeAll">
-                <input type="radio" :id="item" :value="item" v-model="type">
+                <input type="radio" :id="item" :value="item" v-model="type" @click="radioClick">
                 <label :for="item">
                   <div class="radio">
                     <i class="fa-solid fa-check"></i>
@@ -682,6 +688,7 @@ const checkout=()=>{
             <div class="nameWrap">
               <div class="name">{{ products[productIndexOfproducts].name }} ({{ products[productIndexOfproducts].unit }})</div>
               <i @click="products[productIndexOfproducts].favorite=!products[productIndexOfproducts].favorite" :class="{'fa-solid':products[productIndexOfproducts].favorite}" class="favorite fa-regular fa-heart" ></i>
+              <i @click="copyUrl" class="share fa-solid fa-share-nodes"></i>
             </div>
             <div class="price">價格：NT$ {{ products[productIndexOfproducts].price }}</div>
             <div class="text">訂購天數需要3至5個工作天（不含訂購當天），</div>
@@ -838,7 +845,7 @@ const checkout=()=>{
           <div v-if="!discount==0" class="checkoutDiscount"><span class="checkoutTitle">折扣：</span><span class="checkoutPrice">- $ {{ discount.toLocaleString() }}</span></div>
           <div class="checkoutFreight"><span class="checkoutTitle">運費：</span><span class="checkoutPrice">+ $ {{freight.toLocaleString()}}</span></div>
           <div class="checkoutFinalPrice"><span class="checkoutTitle">總金額({{ totalItem }}件商品)：</span><span class="checkoutPrice">NT$ {{ finalPrice.toLocaleString() }}</span></div>
-          <div class="checkout" @click="checkout">確認結帳</div>
+          <div class="checkout fa-beat" @click="checkout">確認結帳</div>
         </div>
       </div>
       <div v-else class="noSelect">請選擇一項以上商品(勾選商品前方框框)</div>
@@ -1070,6 +1077,7 @@ header{
       i{
         font-size: 24px;
         margin: 0 5px 0 5px;
+        color: rgb(255, 140, 128);
         &:hover{
             color: $color_orange;
         }
@@ -1827,12 +1835,15 @@ header{
         display: flex;
         align-items: center;
         .name{
-        padding: 5px;
-        font-weight: 900;
-        }
-          .favorite{
           font-size: 20px;
           color: $color_orange;
+          padding: 5px;
+          font-weight: 900;
+        }
+        .favorite, .share{
+          font-size: 20px;
+          color: $color_orange;
+          margin: 0 2px;
         }
       }
       .text{
@@ -2216,7 +2227,6 @@ footer{
       z-index: 1;
       background: url(./assets/bg03.png);
       white-space: nowrap;
-
       .select{
         margin-left: 5px;
         white-space: nowrap;
