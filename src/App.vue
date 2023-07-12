@@ -6,6 +6,17 @@ import couponsJson from '../json/coupons.json'
 //所有商品 如果localStorage找不到就從JSON檔取得
 const products = ref(JSON.parse(localStorage.getItem('products')) || productsJson)
 
+//動態綁定背景
+// const getBgStyle=(url)=>{
+//   return `background: url(${url}) no-repeat center center / cover`
+// }
+const getBgStyle=(file)=>{
+  return `background: url(./src/assets/${file}) no-repeat center center / cover`
+}
+const getImageUrl=(file)=>{
+  return new URL(`./assets/${file}`, import.meta.url).href
+}
+
 watch(products, (renew)=>{
   localStorage.setItem('products',JSON.stringify(renew))
 },{ deep: true })
@@ -13,7 +24,7 @@ watch(products, (renew)=>{
 //商品中所有的類型(側選單用 去掉重複)
 const typeAll = computed(()=>{
   let arr=[]
-  products.value.forEach((i)=>arr.push(i.type))
+  products.value.forEach(i=>arr.push(i.type))
   arr = arr.filter((item,index)=>arr.indexOf(item)===index)
   return arr
 })
@@ -21,8 +32,8 @@ const typeAll = computed(()=>{
 //商品中所有的種類(側選單用 去掉重複)
 const ingredientAll = computed(()=>{
   let arr=[]
-  products.value.forEach((i)=>{
-    i.ingredient.forEach((j)=>{
+  products.value.forEach(i=>{
+    i.ingredient.forEach(j=>{
       arr.push(j)
     })
   })
@@ -33,12 +44,12 @@ const ingredientAll = computed(()=>{
 //商品中最高與最低價格(側選單用)
 const priceMax = computed(()=>{
   let arr=[]
-  products.value.forEach((i)=>arr.push(i.price))
+  products.value.forEach(i=>arr.push(i.price))
   return Math.max(...arr)
 })
 const priceMin = computed(()=>{
   let arr=[]
-  products.value.forEach((i)=>arr.push(i.price))
+  products.value.forEach(i=>arr.push(i.price))
   return Math.min(...arr)
 })
 const priceRange = ref(priceMax.value) //選中的價格
@@ -291,10 +302,6 @@ const move = computed(()=>{
   const x =100*carouselNowIndex.value
   return `transform:translateX(-${x}%)`
 })
-//動態綁定背景
-const stylebg=(url)=>{
-  return `background: url(${url}) no-repeat center center / cover`
-}
 //商品詳情頁面
 const productIndexOfproducts = ref(0) //動態修改
 const productDetailNowIndex = ref(0)
@@ -332,9 +339,16 @@ const urlSwitch=computed(()=>{
 window.addEventListener('hashchange',hashchangeHandler)
 hashchangeHandler()
 
+//複製當前網址
+const clipboard = ref(false)
 const copyUrl=()=>{
   const url= window.location.href
   navigator.clipboard.writeText(url)
+  .then(()=>{
+    clipboard.value=true
+    setTimeout(()=>{
+      clipboard.value=false
+    },2000)})
 }
 
 //判斷手機使用者手勢
@@ -554,8 +568,8 @@ const checkout=()=>{
             <div class="itemWrap" :style="move">
               <div class="item" v-for="(product,i) in products" :class="{selected:i===carouselNowIndex}">
                 <a :href="'#'+product.id">
-                  <div class="img" v-for="url in product.imgs.slice(0,2)" :style="stylebg(url)"></div>
-                  <h3 >{{ product.name }}</h3>
+                  <div class="img" v-for="img in product.imgs.slice(0,2)" :style="getBgStyle(img)"></div>
+                  <h3>{{ product.name }}</h3>
                 </a>
               </div>
             </div>
@@ -622,7 +636,8 @@ const checkout=()=>{
                     <a :href="'#'+item.id">
                       <div class="product">
                         <div class="img">
-                          <img v-for="url in item.imgs.slice(0,2)" :src=url alt="">
+                          <!-- <img v-for="url in item.imgs.slice(0,2)" :src=url alt=""> -->
+                          <img v-for="file in item.imgs.slice(0,2)" :src=getImageUrl(file) alt="">
                           <i @click.prevent="item.favorite=!item.favorite" :class="{'fa-solid':item.favorite}" class="favorite fa-regular fa-heart" ></i>
                         </div>
                         <div class="name">{{ item.name }}</div>
@@ -669,7 +684,7 @@ const checkout=()=>{
           <div class="carousel" @touchstart="touchstartHandler" @touchend="touchendHandler(2,$event)">
             <div class="itemWrap" :style="productDetailMove">
               <div class="item">
-                <div class="img" v-for="url in products[productIndexOfproducts].imgs" :style="stylebg(url)"></div>
+                <div class="img" v-for="img in products[productIndexOfproducts].imgs" :style="getBgStyle(img)"></div>
               </div>
             </div>
             <div class="controlWrap">
@@ -679,7 +694,7 @@ const checkout=()=>{
           </div>
           <div class="carouselIndex">
             <ul>
-              <li v-for="(url, i) in products[productIndexOfproducts].imgs" @click="productDetailIndexpress(i)" :class="{now:i===productDetailNowIndex}" :style="stylebg(url)"></li>
+              <li v-for="(img, i) in products[productIndexOfproducts].imgs" @click="productDetailIndexpress(i)" :class="{now:i===productDetailNowIndex}" :style="getBgStyle(img)"></li>
             </ul>
           </div>
         </div>
@@ -688,7 +703,11 @@ const checkout=()=>{
             <div class="nameWrap">
               <div class="name">{{ products[productIndexOfproducts].name }} ({{ products[productIndexOfproducts].unit }})</div>
               <i @click="products[productIndexOfproducts].favorite=!products[productIndexOfproducts].favorite" :class="{'fa-solid':products[productIndexOfproducts].favorite}" class="favorite fa-regular fa-heart" ></i>
-              <i @click="copyUrl" class="share fa-solid fa-share-nodes"></i>
+              <i @click="copyUrl" class="share fa-solid fa-share-nodes">
+                <Transition>
+                  <span v-if='clipboard' :class="{message: clipboard}">網址已複製!</span>
+                </Transition>
+              </i>
             </div>
             <div class="price">價格：NT$ {{ products[productIndexOfproducts].price }}</div>
             <div class="text">訂購天數需要3至5個工作天（不含訂購當天），</div>
@@ -777,7 +796,7 @@ const checkout=()=>{
           </label>
         </div>
         <div class="img">
-          <img v-for="url in item.imgs.slice(0,2)" :src=url alt="">
+          <img v-for="file in item.imgs.slice(0,2)" :src="getImageUrl(file)" alt="">
         </div>
         <div class="name">
           <div>{{ item.name }}</div>
@@ -872,7 +891,7 @@ const checkout=()=>{
       <TransitionGroup name="fadeOut" tag="div" mode='out-in'>
       <div v-for="item in favoriteProducts" :key="item.id" class="item" >
         <div class="img">
-          <img v-for="url in item.imgs.slice(0,2)" :src=url alt="">
+          <img v-for="file in item.imgs.slice(0,2)" :src=getImageUrl(file) alt="">
         </div>
         <div class="name">
           <div>{{ item.name }}</div>
@@ -1834,6 +1853,7 @@ header{
       .nameWrap{
         display: flex;
         align-items: center;
+        position: relative;
         .name{
           font-size: 20px;
           color: $color_orange;
@@ -1844,6 +1864,21 @@ header{
           font-size: 20px;
           color: $color_orange;
           margin: 0 2px;
+          .message{
+            position: absolute;
+            padding: 5px;
+            top: -20px;
+            left: 110px;
+            background: $color_orange;
+            color: #e5e5e5;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            opacity: 0.8;
+            white-space: nowrap;
+          }
         }
       }
       .text{
