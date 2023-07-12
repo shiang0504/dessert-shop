@@ -11,12 +11,13 @@ const products = ref(JSON.parse(localStorage.getItem('products')) || productsJso
 //   return `background: url(${url}) no-repeat center center / cover`
 // }
 const getBgStyle=(file)=>{
-  return `background: url(./src/assets/${file}) no-repeat center center / cover`
+  const url = new URL(`./assets/${file}`, import.meta.url).href
+  return `background: url(${url}) no-repeat center center / cover`
 }
 const getImageUrl=(file)=>{
   return new URL(`./assets/${file}`, import.meta.url).href
 }
-
+console.log(import.meta.url)
 watch(products, (renew)=>{
   localStorage.setItem('products',JSON.stringify(renew))
 },{ deep: true })
