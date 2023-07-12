@@ -704,11 +704,10 @@ const checkout=()=>{
             <div class="nameWrap">
               <div class="name">{{ products[productIndexOfproducts].name }} ({{ products[productIndexOfproducts].unit }})</div>
               <i @click="products[productIndexOfproducts].favorite=!products[productIndexOfproducts].favorite" :class="{'fa-solid':products[productIndexOfproducts].favorite}" class="favorite fa-regular fa-heart" ></i>
-              <i @click="copyUrl" class="share fa-solid fa-share-nodes">
-                <Transition>
-                  <span v-if='clipboard' :class="{message: clipboard}">網址已複製!</span>
-                </Transition>
-              </i>
+              <i @click="copyUrl" class="share fa-solid fa-share-nodes"></i>
+              <Transition>
+              <span v-if='clipboard' :class="{message: clipboard}">網址已複製!</span>
+              </Transition>
             </div>
             <div class="price">價格：NT$ {{ products[productIndexOfproducts].price }}</div>
             <div class="text">訂購天數需要3至5個工作天（不含訂購當天），</div>
@@ -1854,7 +1853,7 @@ header{
       .nameWrap{
         display: flex;
         align-items: center;
-        position: relative;
+        // position: relative;
         .name{
           font-size: 20px;
           color: $color_orange;
@@ -1865,21 +1864,19 @@ header{
           font-size: 20px;
           color: $color_orange;
           margin: 0 2px;
-          .message{
-            position: absolute;
-            padding: 5px;
-            top: -20px;
-            left: 110px;
-            background: $color_orange;
-            color: #e5e5e5;
-            font-size: 14px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            opacity: 0.8;
-            white-space: nowrap;
-          }
+        }
+        .message{
+          background: $color_orange;
+          color: #e5e5e5;
+          margin-left: 5px;
+          padding: 4px;
+          font-size: 14px;
+          border-radius: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          white-space: nowrap;
+          opacity: 0.8;
         }
       }
       .text{
