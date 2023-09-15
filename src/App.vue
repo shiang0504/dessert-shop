@@ -1,26 +1,38 @@
 <script setup>
 import { ref, computed, watch, watchEffect} from 'vue';
-import productsJson from '../json/products.json'
+// import productsJson from '../json/products.json'  ///
 import couponsJson from '../json/coupons.json'
+import axios from 'axios'
 
-//所有商品 如果localStorage找不到就從JSON檔取得
-const products = ref(JSON.parse(localStorage.getItem('products')) || productsJson)
+const backendurl = 'http://localhost:3000'
+//所有商品 如果localStorage找不到就從資料庫取得
+const products = ref([]);
+  axios.get('/api/products')
+  .then(res => res.data)
+  .then(data => products.value.push(...data))
+  .catch(err => console.log(err));
+
+// const products = ref(JSON.parse(localStorage.getItem('products')) || getApiData.value)
+// const products = ref(getApiData.value)
 
 //動態綁定背景
 // const getBgStyle=(url)=>{
 //   return `background: url(${url}) no-repeat center center / cover`
 // }
 const getBgStyle=(file)=>{
-  const url = new URL(`./assets/${file}`, import.meta.url).href
-  return `background: url(${url}) no-repeat center center / cover`
+  // const url = new URL(`./assets/${file}`, import.meta.url).href
+  // return `background: url(${url}) no-repeat center center / cover`
+  return `background: url(${backendurl}/images/${file}) no-repeat center center / cover`
 }
 const getImageUrl=(file)=>{
-  return new URL(`./assets/${file}`, import.meta.url).href
+  // return new URL(`./assets/${file}`, import.meta.url).href
+  // return `/api/images/${file}`
+  return `${backendurl}/images/${file}`
 }
-console.log(import.meta.url)
-watch(products, (renew)=>{
-  localStorage.setItem('products',JSON.stringify(renew))
-},{ deep: true })
+// console.log(import.meta.url)
+// watch(products, (renew)=>{
+//   localStorage.setItem('products',JSON.stringify(renew))
+// },{ deep: true })
 
 //商品中所有的類型(側選單用 去掉重複)
 const typeAll = computed(()=>{
@@ -53,7 +65,8 @@ const priceMin = computed(()=>{
   products.value.forEach(i=>arr.push(i.price))
   return Math.min(...arr)
 })
-const priceRange = ref(priceMax.value) //選中的價格
+// const priceRange = ref( priceMax.value ) //選中的價格
+const priceRange = ref(1000) //選中的價格
 // const price = ref([]) //選中的價格
 const type = ref([]) //選中的類型
 const ingredient = ref([]) //選中的關鍵字
@@ -443,6 +456,19 @@ watchEffect(()=>{
 const checkout=()=>{
   alert('銘謝惠顧')
 }
+
+const updateFavorite=(item)=>{
+  console.log(item.favorite)
+  const {id, favorite} = item
+  // console.log(`/api/products?id=${id}&favorite=${favorite}`)
+  axios.patch(`/api/products/${id}/${favorite}`)  //改資料庫資料
+  item.favorite = !item.favorite  //改前端資料
+}
+
+const dd = (X)=>{
+  console.log(X)
+}
+
 </script>
 <template>
   <div class="container">
@@ -603,7 +629,7 @@ const checkout=()=>{
                 <i class="fa-solid fa-hashtag"></i><span>{{ item }}</span><i @click="clearIngredient(item)" class="fa-solid fa-xmark"></i>
               </div>
               <!-- <div v-if="price.length || type.length|| ingredient.length || search.length" class="clear" @click="clearAll">全部清除</div> -->
-              <div v-if="priceRange!=priceMax || type.length|| ingredient.length || search.length" class="clear" @click="clearAll">全部清除</div>
+              <div v-if="priceRange!=priceMax || type.length || ingredient.length || search.length" class="clear" @click="clearAll">全部清除</div>
             </div>
             <div v-if="productsDisplay.length" class="wrap">
               <div class="msg">共有{{ productsDisplay.length }}筆產品</div>
@@ -639,7 +665,8 @@ const checkout=()=>{
                         <div class="img">
                           <!-- <img v-for="url in item.imgs.slice(0,2)" :src=url alt=""> -->
                           <img v-for="file in item.imgs.slice(0,2)" :src=getImageUrl(file) alt="">
-                          <i @click.prevent="item.favorite=!item.favorite" :class="{'fa-solid':item.favorite}" class="favorite fa-regular fa-heart" ></i>
+                          <!-- <i @click.prevent="item.favorite=!item.favorite" :class="{'fa-solid':item.favorite}" class="favorite fa-regular fa-heart" ></i> -->
+                          <i @click.prevent="updateFavorite(item)" :class="{'fa-solid':item.favorite}" class="favorite fa-regular fa-heart" ></i>
                         </div>
                         <div class="name">{{ item.name }}</div>
                         <div class="unit">({{ item.unit }})</div>
@@ -703,7 +730,8 @@ const checkout=()=>{
           <div class="product">
             <div class="nameWrap">
               <div class="name">{{ products[productIndexOfproducts].name }} ({{ products[productIndexOfproducts].unit }})</div>
-              <i @click="products[productIndexOfproducts].favorite=!products[productIndexOfproducts].favorite" :class="{'fa-solid':products[productIndexOfproducts].favorite}" class="favorite fa-regular fa-heart" ></i>
+              <!-- <i @click="products[productIndexOfproducts].favorite=!products[productIndexOfproducts].favorite" :class="{'fa-solid':products[productIndexOfproducts].favorite}" class="favorite fa-regular fa-heart" ></i> -->
+              <i @click="updateFavorite(products[productIndexOfproducts])" :class="{'fa-solid':products[productIndexOfproducts].favorite}" class="favorite fa-regular fa-heart" ></i>
               <i @click="copyUrl" class="share fa-solid fa-share-nodes"></i>
               <Transition>
               <span v-if='clipboard' :class="{message: clipboard}">網址已複製!</span>
@@ -813,7 +841,7 @@ const checkout=()=>{
         <div class="totalPrice">{{ (item.price*item.number).toLocaleString() }}</div>
         <div class="options">
           <div @click="deleCartProducts(item.id)" class="delete"><i class="fa-solid fa-trash-can"></i></div>
-          <div @click="moveProducts(item.id)" class="move">移至最愛</div>
+          <!-- <div @click="moveProducts(item.id)" class="move">移至最愛</div> -->
         </div>
       </div>
       </TransitionGroup>
@@ -913,7 +941,8 @@ const checkout=()=>{
             <div v-else>加入購物車</div>
           </Transition>
           </div>
-          <div @click="item.favorite=!item.favorite">移出最愛</div>
+          <!-- <div @click="item.favorite=!item.favorite">移出最愛</div> -->
+          <div @click="updateFavorite(item)">移出最愛</div>
         </div>
         
       </div>
