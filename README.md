@@ -5,24 +5,27 @@
 
 ## 專案簡介
 [Demo網址](https://shiang0504.github.io/dessert-shop/)<br>
-基於兩筆json資料(products.json及coupons.json)資料驅動畫面的SPA應用，<br>
-搭配hashchange事件做簡單的頁面路由，實現每項商品具有獨立網址的效果，<br>
-以及UX、RWD響應式設計及切版練習。
+資料驅動畫面的SPA應用，<br>
+使用Pinia進行資料的狀態管理，<br>
+搭配Vue Router實現每項商品具獨立網址，<br>
+以及RWD響應式設計切版練習。
 
 ## 開發工具
 * Vite
 * Vue3 Composition API
+* Vue Router
+* Pinia
 * SCSS
 
 ## 其他說明
-###### 篩選功能、商品介紹頁面、輪播功能、分頁、折價券功能等
-* 依據json檔案內容自動動態生成
+###### 篩選功能、商品介紹頁面、輪播功能、分頁、折價券功能
+* 依據json檔案資料驅動畫面動態產生
 
 ###### 購物車、最愛項目
 * 依據使用者行為將資料儲存於localstorage
 
 ###### 商品獨立網址
-* 使用hashchange事件實現的頁面路由
+* 使用Vue Router實現
 
 ## 出處來源
 * 手繪插畫：[loosedrawing](https://loosedrawing.com/)
